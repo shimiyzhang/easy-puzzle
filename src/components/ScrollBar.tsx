@@ -22,6 +22,7 @@ export default function ScrollBar({ scrollRef, width, height, direction = 'y' }:
         setIsScroll(false);
       }, 300);
       const dom: HTMLElement = event.target;
+
       if (direction === 'y') {
         const clientHeight = dom.clientHeight;
         const scrollHeight = dom.scrollHeight;
@@ -36,7 +37,7 @@ export default function ScrollBar({ scrollRef, width, height, direction = 'y' }:
     };
 
     const element = scrollRef.current;
-    element.addEventListener('scroll', handleScroll);
+    element.addEventListener('scroll', handleScroll, true);
 
     return () => {
       element.removeEventListener('scroll', handleScroll);

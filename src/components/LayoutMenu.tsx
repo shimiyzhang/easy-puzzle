@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ScrollBar from './ScrollBar';
 
 const layoutList = [
@@ -172,22 +172,29 @@ export default function LayoutMenu() {
   const [activeKey, setActiveKey] = useState('2-1');
   const scrollRef = useRef(null);
 
+  useEffect(() => {
+    const element = document.getElementById(`layout-${active}`);
+    element?.scrollIntoView({ behavior: 'smooth' });
+  }, [active]);
+
   return (
     <div className='flex h-full items-center'>
       <div className={`h-full overflow-hidden rounded-tr-lg bg-white ${open ? 'w-72' : 'w-0'}`}>
         <div className='relative flex h-full flex-col'>
           <div className='flex flex-wrap pt-4 pb-2 pl-5'>
-            {layoutList.map(({ label, value }) => (
-              <button
-                className={`mr-2 rounded-lg border border-gray-100 py-1 px-3 text-xs hover:border-gray-400 ${
-                  active === value ? ' bg-gray-400 text-white' : ''
-                }`}
-                key={value}
-                onClick={() => setActive(value)}
-              >
-                {label}
-              </button>
-            ))}
+            {layoutList
+              .filter(({ children }) => children.length > 0)
+              .map(({ label, value }) => (
+                <button
+                  className={`mr-2 rounded-lg border border-gray-100 py-1 px-3 text-xs hover:border-gray-400 ${
+                    active === value ? ' bg-gray-400 text-white' : ''
+                  }`}
+                  key={value}
+                  onClick={() => setActive(value)}
+                >
+                  {label}
+                </button>
+              ))}
           </div>
           <div className='relative flex-1 overflow-hidden'>
             {/* scroll-bar */}
@@ -197,7 +204,7 @@ export default function LayoutMenu() {
               {layoutList.map((layout, index) => {
                 if (layout?.children?.length > 0) {
                   return (
-                    <div key={index}>
+                    <div id={`layout-${layout.value}`} key={index}>
                       {index !== 0 ? (
                         <div className='px-5 pt-2 pb-1 text-sm'>{layout.label}</div>
                       ) : (
