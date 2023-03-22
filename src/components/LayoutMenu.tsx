@@ -166,16 +166,51 @@ const layoutList = [
   },
 ];
 
+let timer: any = null;
+
 export default function LayoutMenu() {
   const [open, setOpen] = useState(true);
   const [active, setActive] = useState(2);
   const [activeKey, setActiveKey] = useState('2-1');
-  const scrollRef = useRef(null);
+  const [distance, setDistance] = useState(0);
+  const [isScroll, setIsScroll] = useState(false);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    const element = document.getElementById(`layout-${active}`);
-    element?.scrollIntoView({ behavior: 'smooth' });
-  }, [active]);
+  const onChangeActive = (value: number) => {
+    if (!scrollRef.current) return;
+    setActive(value);
+    const children = scrollRef.current.children;
+    for (let index = 0; index < children.length; index++) {
+      const element = children.item(index) as HTMLElement;
+      const dataIndex = element.dataset.index;
+      if (Number(dataIndex) === value) {
+        element?.scrollIntoView();
+      }
+    }
+  };
+
+  const handleOnScroll = () => {
+    if (scrollRef.current) {
+      setIsScroll(true);
+      clearTimeout(timer);
+      timer = setTimeout(() => setIsScroll(false), 300);
+      const dom: HTMLElement = scrollRef.current;
+      const children = dom.children;
+      for (let index = 0; index < children.length; index++) {
+        const element = children.item(index) as HTMLElement;
+        const parentClient = dom.getBoundingClientRect();
+        const childClient = element.getBoundingClientRect();
+        if (childClient.top <= parentClient.top) {
+          const dataIndex = element.dataset.index;
+          setActive(Number(dataIndex));
+        }
+      }
+      const clientHeight = dom.clientHeight;
+      const scrollHeight = dom.scrollHeight;
+      const scrollTop = dom.scrollTop;
+      setDistance((scrollTop / (scrollHeight - clientHeight)) * (clientHeight - 80) || 0);
+    }
+  };
 
   return (
     <div className='flex h-full items-center'>
@@ -190,7 +225,7 @@ export default function LayoutMenu() {
                     active === value ? ' bg-gray-400 text-white' : ''
                   }`}
                   key={value}
-                  onClick={() => setActive(value)}
+                  onClick={() => onChangeActive(value)}
                 >
                   {label}
                 </button>
@@ -198,13 +233,17 @@ export default function LayoutMenu() {
           </div>
           <div className='relative flex-1 overflow-hidden'>
             {/* scroll-bar */}
-            <ScrollBar scrollRef={scrollRef} width={4} height={80} direction='y' />
+            <ScrollBar distance={distance} width={4} height={80} isScroll={isScroll} />
             {/* layout-list */}
-            <div className='h-full w-full overflow-y-scroll' ref={scrollRef}>
+            <div
+              className='h-full w-full overflow-y-scroll'
+              ref={scrollRef}
+              onScroll={handleOnScroll}
+            >
               {layoutList.map((layout, index) => {
                 if (layout?.children?.length > 0) {
                   return (
-                    <div id={`layout-${layout.value}`} key={index}>
+                    <div data-index={layout.value} key={index}>
                       {index !== 0 ? (
                         <div className='px-5 pt-2 pb-1 text-sm'>{layout.label}</div>
                       ) : (
@@ -213,7 +252,7 @@ export default function LayoutMenu() {
                       <div className='flex flex-wrap pl-5'>
                         {layout?.children?.map(({ key, src }) => (
                           <div
-                            className={`mr-4 mb-4 rounded border-2 bg-gray-100 hover:bg-gray-200 ${
+                            className={`mr-4 mb-4 cursor-pointer rounded border-2 bg-gray-100 hover:bg-gray-200 ${
                               key === activeKey ? 'border-blue-500' : 'border-gray-100'
                             }`}
                             key={key}
