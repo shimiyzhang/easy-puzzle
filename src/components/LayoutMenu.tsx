@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
-import { useEffect, useRef, useState } from 'react';
-import ScrollBar from './ScrollBar';
+import { useRef, useState } from 'react';
+import ScrollBar, { ScrollBarRef } from './ScrollBar';
 
 const layoutList = [
   {
@@ -166,114 +166,76 @@ const layoutList = [
   },
 ];
 
-let timer: any = null;
-
 export default function LayoutMenu() {
   const [open, setOpen] = useState(true);
   const [active, setActive] = useState(2);
   const [activeKey, setActiveKey] = useState('2-1');
-  const [distance, setDistance] = useState(0);
-  const [isScroll, setIsScroll] = useState(false);
-  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const scrollRef = useRef<ScrollBarRef | null>(null);
 
   const onChangeActive = (value: number) => {
     if (!scrollRef.current) return;
     setActive(value);
-    const children = scrollRef.current.children;
-    for (let index = 0; index < children.length; index++) {
-      const element = children.item(index) as HTMLElement;
-      const dataIndex = element.dataset.index;
-      if (Number(dataIndex) === value) {
-        element?.scrollIntoView();
-      }
-    }
+    scrollRef.current.scrollTo(value);
   };
 
-  const handleOnScroll = () => {
-    if (scrollRef.current) {
-      setIsScroll(true);
-      clearTimeout(timer);
-      timer = setTimeout(() => setIsScroll(false), 300);
-      const dom: HTMLElement = scrollRef.current;
-      const children = dom.children;
-      for (let index = 0; index < children.length; index++) {
-        const element = children.item(index) as HTMLElement;
-        const parentClient = dom.getBoundingClientRect();
-        const childClient = element.getBoundingClientRect();
-        if (childClient.top <= parentClient.top) {
-          const dataIndex = element.dataset.index;
-          setActive(Number(dataIndex));
-        }
-      }
-      const clientHeight = dom.clientHeight;
-      const scrollHeight = dom.scrollHeight;
-      const scrollTop = dom.scrollTop;
-      setDistance((scrollTop / (scrollHeight - clientHeight)) * (clientHeight - 80) || 0);
-    }
-  };
+  const filterList = layoutList.filter(({ children }) => children.length > 0);
+  const indexs = filterList.map(({ value }) => value);
 
   return (
     <div className='flex h-full items-center'>
       <div className={`h-full overflow-hidden rounded-tr-lg bg-white ${open ? 'w-72' : 'w-0'}`}>
         <div className='relative flex h-full flex-col'>
           <div className='flex flex-wrap pt-4 pb-2 pl-5'>
-            {layoutList
-              .filter(({ children }) => children.length > 0)
-              .map(({ label, value }) => (
-                <button
-                  className={`mr-2 rounded-lg border border-gray-100 py-1 px-3 text-xs hover:border-gray-400 ${
-                    active === value ? ' bg-gray-400 text-white' : ''
-                  }`}
-                  key={value}
-                  onClick={() => onChangeActive(value)}
-                >
-                  {label}
-                </button>
-              ))}
+            {filterList.map(({ label, value }) => (
+              <button
+                className={`mr-2 rounded-lg border border-gray-100 py-1 px-3 text-xs ${
+                  active === value ? ' bg-gray-400 text-white' : ''
+                }`}
+                key={value}
+                onClick={() => onChangeActive(value)}
+              >
+                {label}
+              </button>
+            ))}
           </div>
-          <div className='relative flex-1 overflow-hidden'>
-            {/* scroll-bar */}
-            <ScrollBar distance={distance} width={4} height={80} isScroll={isScroll} />
+          {/* scroll-bar */}
+          <ScrollBar
+            width={4}
+            height={80}
+            ref={scrollRef}
+            indexs={indexs}
+            activeIndex={active}
+            onIndexChange={(index) => setActive(index)}
+          >
             {/* layout-list */}
-            <div
-              className='h-full w-full overflow-y-scroll'
-              ref={scrollRef}
-              onScroll={handleOnScroll}
-            >
-              {layoutList.map((layout, index) => {
-                if (layout?.children?.length > 0) {
-                  return (
-                    <div data-index={layout.value} key={index}>
-                      {index !== 0 ? (
-                        <div className='px-5 pt-2 pb-1 text-sm'>{layout.label}</div>
-                      ) : (
-                        <div className='pt-2'></div>
-                      )}
-                      <div className='flex flex-wrap pl-5'>
-                        {layout?.children?.map(({ key, src }) => (
-                          <div
-                            className={`mr-4 mb-4 cursor-pointer rounded border-2 bg-gray-100 hover:bg-gray-200 ${
-                              key === activeKey ? 'border-blue-500' : 'border-gray-100'
-                            }`}
-                            key={key}
-                          >
-                            <img
-                              className='h-16 w-16'
-                              src={src}
-                              alt='template-item'
-                              onClick={() => setActiveKey(key)}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                      <div className='h-px bg-gray-200'></div>
+            {filterList.map((layout, index) => (
+              <div key={index}>
+                {index !== 0 ? (
+                  <div className='px-5 pt-2 pb-1 text-sm'>{layout.label}</div>
+                ) : (
+                  <div className='pt-2'></div>
+                )}
+                <div className='flex flex-wrap pl-5'>
+                  {layout?.children?.map(({ key, src }) => (
+                    <div
+                      className={`mr-4 mb-4 cursor-pointer rounded border-2 bg-gray-100 hover:bg-gray-200 ${
+                        key === activeKey ? 'border-blue-500' : 'border-gray-100'
+                      }`}
+                      key={key}
+                    >
+                      <img
+                        className='h-16 w-16'
+                        src={src}
+                        alt='template-item'
+                        onClick={() => setActiveKey(key)}
+                      />
                     </div>
-                  );
-                }
-                return null;
-              })}
-            </div>
-          </div>
+                  ))}
+                </div>
+                <div className='h-px bg-gray-200'></div>
+              </div>
+            ))}
+          </ScrollBar>
         </div>
       </div>
       <button
