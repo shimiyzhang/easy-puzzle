@@ -1,7 +1,14 @@
 import Head from 'next/head';
 import LayoutMenu from '@/components/LayoutMenu';
+import LayoutContent from '@/components/LayoutContent';
+import { useState } from 'react';
+import { findLayoutProps } from '@/data/layoutData';
 
 export default function Home() {
+  const [activeKey, setActiveKey] = useState('2-1');
+
+  const layoutProps = findLayoutProps(activeKey);
+
   return (
     <>
       <Head>
@@ -22,9 +29,11 @@ export default function Home() {
         </header>
         <main className='flex w-full flex-1 gap-4 overflow-hidden bg-gray-100'>
           <div className='flex h-full flex-shrink-0'>
-            <LayoutMenu />
+            <LayoutMenu activeKey={activeKey} changeKey={(key) => setActiveKey(key)} />
           </div>
-          <div className='relative flex flex-1 items-center justify-center overflow-hidden'></div>
+          <div className='relative flex flex-1 items-center justify-center overflow-hidden'>
+            <LayoutContent layoutProps={layoutProps} />
+          </div>
           <div className='w-96 flex-shrink-0 bg-white'></div>
         </main>
       </div>

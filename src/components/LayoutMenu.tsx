@@ -1,175 +1,16 @@
 /* eslint-disable @next/next/no-img-element */
 import { useRef, useState } from 'react';
 import ScrollBar, { ScrollBarRef } from './ScrollBar';
+import { layoutList } from '@/data/layoutData';
 
-const layoutList = [
-  {
-    label: '2',
-    value: 2,
-    children: [
-      {
-        key: '2-1',
-        src: '/assets/images/layout/2-1.png',
-      },
-      {
-        key: '2-2',
-        src: '/assets/images/layout/2-2.png',
-      },
-    ],
-  },
-  {
-    label: '3',
-    value: 3,
-    children: [
-      {
-        key: '3-1',
-        src: '/assets/images/layout/3-1.png',
-      },
-      {
-        key: '3-2',
-        src: '/assets/images/layout/3-2.png',
-      },
-      {
-        key: '3-3',
-        src: '/assets/images/layout/3-3.png',
-      },
-      {
-        key: '3-4',
-        src: '/assets/images/layout/3-4.png',
-      },
-      {
-        key: '3-5',
-        src: '/assets/images/layout/3-5.png',
-      },
-      {
-        key: '3-6',
-        src: '/assets/images/layout/3-6.png',
-      },
-      {
-        key: '3-7',
-        src: '/assets/images/layout/3-7.png',
-      },
-      {
-        key: '3-8',
-        src: '/assets/images/layout/3-8.png',
-      },
-      {
-        key: '3-9',
-        src: '/assets/images/layout/3-9.png',
-      },
-      {
-        key: '3-10',
-        src: '/assets/images/layout/3-10.png',
-      },
-    ],
-  },
-  {
-    label: '4',
-    value: 4,
-    children: [
-      {
-        key: '4-1',
-        src: '/assets/images/layout/4-1.png',
-      },
-      {
-        key: '4-2',
-        src: '/assets/images/layout/4-2.png',
-      },
-      {
-        key: '4-3',
-        src: '/assets/images/layout/4-3.png',
-      },
-      {
-        key: '4-4',
-        src: '/assets/images/layout/4-4.png',
-      },
-      {
-        key: '4-5',
-        src: '/assets/images/layout/4-5.png',
-      },
-      {
-        key: '4-6',
-        src: '/assets/images/layout/4-6.png',
-      },
-      {
-        key: '4-7',
-        src: '/assets/images/layout/4-7.png',
-      },
-      {
-        key: '4-8',
-        src: '/assets/images/layout/4-8.png',
-      },
-      {
-        key: '4-9',
-        src: '/assets/images/layout/4-9.png',
-      },
-      {
-        key: '4-10',
-        src: '/assets/images/layout/4-10.png',
-      },
-      {
-        key: '4-11',
-        src: '/assets/images/layout/4-11.png',
-      },
-      {
-        key: '4-12',
-        src: '/assets/images/layout/4-12.png',
-      },
-      {
-        key: '4-13',
-        src: '/assets/images/layout/4-13.png',
-      },
-      {
-        key: '4-14',
-        src: '/assets/images/layout/4-14.png',
-      },
-      {
-        key: '4-15',
-        src: '/assets/images/layout/4-15.png',
-      },
-      {
-        key: '4-16',
-        src: '/assets/images/layout/4-16.png',
-      },
-      {
-        key: '4-17',
-        src: '/assets/images/layout/4-17.png',
-      },
-      {
-        key: '4-18',
-        src: '/assets/images/layout/4-18.png',
-      },
-      {
-        key: '4-19',
-        src: '/assets/images/layout/4-19.png',
-      },
-      {
-        key: '4-20',
-        src: '/assets/images/layout/4-20.png',
-      },
-    ],
-  },
-  {
-    label: '5',
-    value: 5,
-    children: [],
-  },
-  {
-    label: '6',
-    value: 6,
-    children: [],
-  },
-  {
-    label: '更多',
-    value: 999,
-    children: [],
-  },
-];
+export type LayoutMenuProps = {
+  activeKey: string;
+  changeKey: (key: string) => void;
+};
 
-export default function LayoutMenu() {
+export default function LayoutMenu({ activeKey, changeKey }: LayoutMenuProps) {
   const [open, setOpen] = useState(true);
   const [active, setActive] = useState(2);
-  const [activeKey, setActiveKey] = useState('2-1');
   const scrollRef = useRef<ScrollBarRef | null>(null);
 
   const onChangeActive = (value: number) => {
@@ -227,7 +68,7 @@ export default function LayoutMenu() {
                         className='h-16 w-16'
                         src={src}
                         alt='template-item'
-                        onClick={() => setActiveKey(key)}
+                        onClick={() => changeKey(key)}
                       />
                     </div>
                   ))}
