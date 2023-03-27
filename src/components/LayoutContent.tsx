@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import ItemContent from './ItemContent';
 import { LayoutProps } from '@/data/layoutData';
 
 const baseStyle = {
@@ -22,10 +23,7 @@ export default function LayoutContent({ layoutProps }: LayoutContentProps) {
       if (!content) return;
 
       const width = content.offsetWidth;
-      const height = content.offsetHeight;
-      if (width !== height) {
-        setHeight(width);
-      }
+      setHeight(width);
     };
 
     onResize();
@@ -37,24 +35,13 @@ export default function LayoutContent({ layoutProps }: LayoutContentProps) {
 
   const style = height === 0 ? { height: baseStyle.maxHeight } : { height };
 
-  const layoutItem = layoutProps.map((layout, index) => {
-    const itemStyle = {
-      top: layout.top,
-      left: layout.left,
-      width: `${height * layout.width}px`,
-      height: `${height * layout.height}px`,
-      transform: `translate(${height * layout.x}px, ${height * layout.y}px)`,
-    };
-    return <div className='absolute border border-gray-500' style={itemStyle} key={index} />;
-  });
-
   return (
     <div
-      className='relative h-full w-full bg-white'
+      className='relative h-full w-full bg-white p-4'
       style={{ ...baseStyle, ...style }}
       ref={contentRef}
     >
-      {layoutItem}
+      <ItemContent parentHeight={height} layoutProps={layoutProps} />
     </div>
   );
 }

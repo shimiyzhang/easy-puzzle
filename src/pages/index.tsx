@@ -1,11 +1,19 @@
 import Head from 'next/head';
+import { createContext, useState } from 'react';
 import LayoutMenu from '@/components/LayoutMenu';
 import LayoutContent from '@/components/LayoutContent';
-import { useState } from 'react';
 import { findLayoutProps } from '@/data/layoutData';
+
+export interface Image {
+  index: number;
+  url: string;
+}
+export const ImageContext = createContext<any>([]);
 
 export default function Home() {
   const [activeKey, setActiveKey] = useState('2-1');
+
+  const [images, setImages] = useState<Image[]>([]);
 
   const layoutProps = findLayoutProps(activeKey);
 
@@ -28,13 +36,15 @@ export default function Home() {
           </div>
         </header>
         <main className='flex w-full flex-1 gap-4 overflow-hidden bg-gray-100'>
-          <div className='flex h-full flex-shrink-0'>
-            <LayoutMenu activeKey={activeKey} changeKey={(key) => setActiveKey(key)} />
-          </div>
-          <div className='relative flex flex-1 items-center justify-center overflow-hidden'>
-            <LayoutContent layoutProps={layoutProps} />
-          </div>
-          <div className='w-96 flex-shrink-0 bg-white'></div>
+          <ImageContext.Provider value={[images, setImages]}>
+            <div className='flex h-full flex-shrink-0'>
+              <LayoutMenu activeKey={activeKey} changeKey={(key) => setActiveKey(key)} />
+            </div>
+            <div className='relative flex flex-1 items-center justify-center overflow-hidden'>
+              <LayoutContent layoutProps={layoutProps} />
+            </div>
+            <div className='w-96 flex-shrink-0 bg-white'></div>
+          </ImageContext.Provider>
         </main>
       </div>
     </>
