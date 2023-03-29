@@ -8,6 +8,7 @@ export type LayoutMenuProps = {
   changeKey: (key: string) => void;
 };
 
+// 左侧菜单
 export default function LayoutMenu({ activeKey, changeKey }: LayoutMenuProps) {
   const [open, setOpen] = useState(true);
   const [active, setActive] = useState(2);

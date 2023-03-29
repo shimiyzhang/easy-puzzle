@@ -11,6 +11,7 @@ export type LayoutContentProps = {
   layoutProps: LayoutProps[];
 };
 
+// 拼图主体布局
 export default function LayoutContent({ layoutProps }: LayoutContentProps) {
   const contentRef = useRef<HTMLDivElement>(null);
 

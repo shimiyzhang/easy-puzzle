@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { useRef } from 'react';
 import { fileToBase64 } from '@/utils/utils';
 
@@ -6,7 +7,7 @@ interface UploadImageProps {
   onFileChange: (url: string) => void;
 }
 
-/* eslint-disable @next/next/no-img-element */
+// 添加图片
 export default function UploadImage({ closePopover, onFileChange }: UploadImageProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
 

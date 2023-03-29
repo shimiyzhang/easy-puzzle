@@ -10,6 +10,7 @@ interface ItemContentProps {
   layoutProps: LayoutProps[];
 }
 
+// 图片布局展示
 export default function ItemContent({ parentHeight, layoutProps }: ItemContentProps) {
   const [active, setActive] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
