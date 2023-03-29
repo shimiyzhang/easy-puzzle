@@ -32,6 +32,12 @@ export default function ItemContent({ parentHeight, layoutProps }: ItemContentPr
     setImages([...images, { url, index }]);
   };
 
+  const handleRemoveImage = (event: React.MouseEvent<HTMLDivElement>, index: number) => {
+    event.stopPropagation();
+    const changed = images.filter((image: Image) => image.index !== index);
+    setImages(changed);
+  };
+
   return (
     <>
       {layoutProps.map((layout, index) => {
@@ -55,25 +61,39 @@ export default function ItemContent({ parentHeight, layoutProps }: ItemContentPr
               style={itemStyle}
               onClick={(e: React.MouseEvent<HTMLDivElement>) => handleClick(e, index)}
             >
-              <div
-                className={`h-full w-full border-2 ${
-                  active === index ? 'border-blue-400' : 'border-gray-300'
-                }`}
-              >
-                {!!imageUrl ? (
-                  <img
-                    className='absolute top-1/2 left-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 object-cover'
-                    src={imageUrl}
-                    alt='add-btn'
-                  />
-                ) : (
+              {!!imageUrl ? (
+                <div
+                  className={`relative h-full w-full cursor-move border-2 bg-cover bg-center bg-no-repeat ${
+                    active === index ? 'border-blue-400' : 'border-gray-300'
+                  }`}
+                  style={{
+                    backgroundImage: `url(${imageUrl})`,
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div
+                    onClick={(e: React.MouseEvent<HTMLDivElement>) => handleRemoveImage(e, index)}
+                  >
+                    <img
+                      className='absolute top-1 right-1 h-4 w-4 cursor-pointer'
+                      src='/delete-btn.svg'
+                      alt='delete-btn'
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div
+                  className={`h-full w-full border-2 ${
+                    active === index ? 'border-blue-400' : 'border-gray-300'
+                  }`}
+                >
                   <img
                     className='absolute top-1/2 left-1/2 h-10 w-10 -translate-x-1/2 -translate-y-1/2'
                     src='/add-btn.svg'
                     alt='add-btn'
                   />
-                )}
-              </div>
+                </div>
+              )}
             </div>
 
             {active === index && (
