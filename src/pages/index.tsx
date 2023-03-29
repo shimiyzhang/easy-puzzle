@@ -2,6 +2,7 @@ import Head from 'next/head';
 import { createContext, useState } from 'react';
 import LayoutMenu from '@/components/LayoutMenu';
 import LayoutContent from '@/components/LayoutContent';
+import RightMenu from '@/components/RightMenu';
 import { findLayoutProps } from '@/data/layoutData';
 
 export interface Image {
@@ -43,7 +44,9 @@ export default function Home() {
             <div className='relative flex flex-1 items-center justify-center overflow-hidden'>
               <LayoutContent layoutProps={layoutProps} />
             </div>
-            <div className='w-96 flex-shrink-0 bg-white'></div>
+            <div className='flex h-full flex-shrink-0'>
+              <RightMenu />
+            </div>
           </ImageContext.Provider>
         </main>
       </div>
