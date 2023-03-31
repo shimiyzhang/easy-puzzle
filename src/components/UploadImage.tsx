@@ -1,10 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
 import { useRef } from 'react';
 import { fileToBase64 } from '@/utils/utils';
+import { resolve } from 'path';
 
 interface UploadImageProps {
   closePopover: () => void;
-  onFileChange: (url: string) => void;
+  onFileChange: (width: number, height: number, url: string) => void;
 }
 
 // 添加图片
@@ -19,7 +20,14 @@ export default function UploadImage({ closePopover, onFileChange }: UploadImageP
   const fileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files || [];
     const url = await fileToBase64(files[0]);
-    onFileChange(url);
+    const image = new Image();
+    image.src = url;
+    const { width, height } = await new Promise((resolve) => {
+      image.onload = () => {
+        resolve({ width: image.width, height: image.height });
+      };
+    });
+    onFileChange(width, height, url);
   };
 
   return (

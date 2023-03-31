@@ -29,8 +29,8 @@ export default function ItemContent({ parentHeight, layoutProps }: ItemContentPr
     setPosition({ top: event.clientY, left: event.clientX });
   };
 
-  const handleFileChange = (url: string, index: number) => {
-    setImages([...images, { url, index }]);
+  const handleFileChange = (width: number, height: number, url: string, index: number) => {
+    setImages([...images, { width, height, url, index }]);
   };
 
   const handleRemoveImage = (event: React.MouseEvent<HTMLDivElement>, index: number) => {
@@ -50,38 +50,61 @@ export default function ItemContent({ parentHeight, layoutProps }: ItemContentPr
           transform: `translate(${parentHeight * layout.x}px, ${parentHeight * layout.y}px)`,
         };
         let imageUrl = '';
+        let imageWidth = 0;
+        let imageHeight = 0;
+        let transform = `translate(0, 0)`;
         images.forEach((image: Image) => {
           if (image.index === index) {
             imageUrl = image.url;
+            imageWidth = image.width;
+            imageHeight = image.height;
           }
         });
+        // 相对于布局和图片的最大宽高比,计算图片尺寸
+        const wScale = (parentHeight * layout.width) / imageWidth;
+        const hScale = (parentHeight * layout.height) / imageHeight;
+        if (wScale > hScale) {
+          imageWidth = parentHeight * layout.width;
+          imageHeight = imageHeight * wScale;
+          transform = `translateY(${-Math.abs(imageHeight - parentHeight * layout.height) / 2}px)`;
+        } else {
+          imageHeight = parentHeight * layout.height;
+          imageWidth = imageWidth * hScale;
+          transform = `translateX(${-Math.abs(imageWidth - parentHeight * layout.width) / 2}px)`;
+        }
         return (
           <div key={index}>
             <div
-              className='absolute p-2'
+              className={`absolute overflow-hidden ${
+                active === index ? 'border-blue-400' : 'border-gray-300'
+              }`}
               style={itemStyle}
               onClick={(e: React.MouseEvent<HTMLDivElement>) => handleClick(e, index)}
             >
               {!!imageUrl ? (
-                <div
-                  className={`relative h-full w-full cursor-move border-2 bg-cover bg-center bg-no-repeat ${
-                    active === index ? 'border-blue-400' : 'border-gray-300'
-                  }`}
-                  style={{
-                    backgroundImage: `url(${imageUrl})`,
-                  }}
-                  onClick={(e) => e.stopPropagation()}
-                >
+                <>
                   <div
+                    className={`relative cursor-move border-2`}
+                    style={{
+                      width: `${imageWidth}px`,
+                      height: `${imageHeight}px`,
+                      transform: transform,
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <img className='h-full w-full' src={imageUrl} alt='upload-image' />
+                  </div>
+                  <div
+                    className='absolute top-0 right-0 h-6 w-6 cursor-pointer p-1'
                     onClick={(e: React.MouseEvent<HTMLDivElement>) => handleRemoveImage(e, index)}
                   >
                     <img
-                      className='absolute top-1 right-1 h-4 w-4 cursor-pointer'
+                      className='h-full w-full cursor-pointer'
                       src='/delete-btn.svg'
                       alt='delete-btn'
                     />
                   </div>
-                </div>
+                </>
               ) : (
                 <div
                   className={`h-full w-full border-2 ${
@@ -102,7 +125,9 @@ export default function ItemContent({ parentHeight, layoutProps }: ItemContentPr
                 placement='bottom'
                 content={
                   <UploadImage
-                    onFileChange={(url) => handleFileChange(url, index)}
+                    onFileChange={(width, height, url) =>
+                      handleFileChange(width, height, url, index)
+                    }
                     closePopover={() => setIsOpen(false)}
                   />
                 }

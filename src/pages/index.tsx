@@ -7,6 +7,8 @@ import { findLayoutProps } from '@/data/layoutData';
 
 export interface Image {
   index: number;
+  width: number;
+  height: number;
   url: string;
 }
 export const ImageContext = createContext<any>([]);
