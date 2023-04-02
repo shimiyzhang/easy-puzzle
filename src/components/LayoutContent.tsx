@@ -16,6 +16,7 @@ export default function LayoutContent({ layoutProps }: LayoutContentProps) {
   const contentRef = useRef<HTMLDivElement>(null);
 
   const [height, setHeight] = useState(0);
+  const [active, setActive] = useState<number | null>(null);
 
   useEffect(() => {
     // 监听
@@ -34,6 +35,10 @@ export default function LayoutContent({ layoutProps }: LayoutContentProps) {
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
+  useEffect(() => {
+    setActive(null);
+  }, [layoutProps]);
+
   const style = height === 0 ? { height: baseStyle.maxHeight } : { height };
 
   return (
@@ -42,7 +47,18 @@ export default function LayoutContent({ layoutProps }: LayoutContentProps) {
       style={{ ...baseStyle, ...style }}
       ref={contentRef}
     >
-      <ItemContent parentHeight={height} layoutProps={layoutProps} />
+      {layoutProps.map((layout, index) => {
+        return (
+          <ItemContent
+            key={index}
+            index={index}
+            layout={layout}
+            parentHeight={height}
+            active={active}
+            setActive={(index) => setActive(index)}
+          />
+        );
+      })}
     </div>
   );
 }
