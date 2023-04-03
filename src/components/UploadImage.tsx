@@ -22,11 +22,13 @@ export default function UploadImage({ closePopover, onFileChange }: UploadImageP
     const url = await fileToBase64(files[0]);
     const image = new Image();
     image.src = url;
-    const { width, height } = await new Promise((resolve) => {
-      image.onload = () => {
-        resolve({ width: image.width, height: image.height });
-      };
-    });
+    const { width, height } = await new Promise(
+      (resolve: (value: { width: number; height: number }) => void) => {
+        image.onload = () => {
+          resolve({ width: image.width, height: image.height });
+        };
+      },
+    );
     onFileChange(width, height, url);
   };
 
