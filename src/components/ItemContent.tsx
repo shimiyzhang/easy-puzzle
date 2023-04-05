@@ -53,7 +53,6 @@ export default function ItemContent({
   });
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isDrage, setIsDrage] = useState(false);
-  const [mouseDownXY, setMouseDownXY] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     setItemStyle({
@@ -121,9 +120,8 @@ export default function ItemContent({
     setActive(null);
   };
 
-  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseDown = () => {
     setIsDrage(true);
-    setMouseDownXY({ x: event.nativeEvent.offsetX, y: event.nativeEvent.offsetY });
   };
 
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -198,7 +196,7 @@ export default function ItemContent({
               <img className='h-full w-full' src={imageUrl} alt='upload-image' draggable={false} />
             </div>
             <div
-              className='absolute top-0 right-0 h-6 w-6 cursor-pointer p-1'
+              className='ignore absolute top-0 right-0 h-6 w-6 cursor-pointer p-1'
               onClick={(e: React.MouseEvent<HTMLDivElement>) => handleRemoveImage(e, index)}
             >
               <img
