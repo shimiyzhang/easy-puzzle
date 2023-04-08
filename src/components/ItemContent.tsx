@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { useContext, useEffect, useState } from 'react';
 import { Popover } from 'antd';
+import { CloseCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import UploadImage from './UploadImage';
 import { ImageContext, Image } from '@/pages/index';
 import { LayoutProps } from '@/data/layoutData';
@@ -174,7 +175,7 @@ export default function ItemContent({
     <>
       <div
         className={`absolute overflow-hidden border-2 ${
-          active === index ? 'border-blue-400' : 'border-gray-300'
+          active === index ? 'border-blue-300' : 'border-gray-300'
         }`}
         style={itemStyle}
         onClick={(e: React.MouseEvent<HTMLDivElement>) => handleClick(e, index)}
@@ -195,16 +196,10 @@ export default function ItemContent({
             >
               <img className='h-full w-full' src={imageUrl} alt='upload-image' draggable={false} />
             </div>
-            <div
-              className='ignore absolute top-0 right-0 h-6 w-6 cursor-pointer p-1'
+            <CloseCircleOutlined
+              className='ignore absolute top-1 right-1 cursor-pointer text-black opacity-25 hover:opacity-50'
               onClick={(e: React.MouseEvent<HTMLDivElement>) => handleRemoveImage(e, index)}
-            >
-              <img
-                className='h-full w-full cursor-pointer'
-                src='/delete-btn.svg'
-                alt='delete-btn'
-              />
-            </div>
+            />
           </>
         ) : (
           <div
@@ -212,11 +207,7 @@ export default function ItemContent({
               active === index ? 'border-blue-400' : 'border-gray-300'
             }`}
           >
-            <img
-              className='absolute top-1/2 left-1/2 h-10 w-10 -translate-x-1/2 -translate-y-1/2'
-              src='/add-btn.svg'
-              alt='add-btn'
-            />
+            <PlusOutlined className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-3xl text-black opacity-25 hover:opacity-50' />
           </div>
         )}
       </div>
