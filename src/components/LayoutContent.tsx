@@ -1,10 +1,17 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState, useEffect, useRef, forwardRef, useContext, useImperativeHandle } from 'react';
+import { message } from 'antd';
+import { ImageContext } from '@/pages';
 import ItemContent from './ItemContent';
 import { LayoutProps } from '@/data/layoutData';
+import domtoimage from 'dom-to-image';
 
 const baseStyle = {
   maxHeight: '80vh',
   maxWidth: '80vh',
+};
+
+export type LayoutContentRef = {
+  downloadImage: () => void;
 };
 
 export type LayoutContentProps = {
@@ -12,7 +19,12 @@ export type LayoutContentProps = {
 };
 
 // 拼图主体布局
-export default function LayoutContent({ layoutProps }: LayoutContentProps) {
+const LayoutContent = forwardRef<LayoutContentRef, LayoutContentProps>(function LayoutContent(
+  { layoutProps },
+  ref,
+) {
+  const [images, _] = useContext(ImageContext);
+
   const contentRef = useRef<HTMLDivElement>(null);
 
   const [height, setHeight] = useState(0);
@@ -39,6 +51,32 @@ export default function LayoutContent({ layoutProps }: LayoutContentProps) {
     setActive(null);
   }, [layoutProps]);
 
+  const downloadImage = () => {
+    if (!contentRef.current) return;
+    if (images.length < layoutProps.length) {
+      message.warning('请添加图片');
+      return;
+    }
+    setActive(null);
+    // 过滤掉右上角的删除按钮
+    const filter = (node: any) => !node.classList.contains('ignore') && node.tagName !== 'SCRIPT';
+    domtoimage
+      .toPng(contentRef.current, { filter })
+      .then((dataUrl) => {
+        const link = document.createElement('a');
+        link.download = 'image.png';
+        link.href = dataUrl;
+        link.click();
+        message.success('下载成功');
+      })
+      .catch(() => {
+        message.error('下载失败');
+      });
+  };
+
+  // 将downloadImage方法暴露给父组件
+  useImperativeHandle(ref, () => ({ downloadImage }));
+
   const style = height === 0 ? { height: baseStyle.maxHeight } : { height };
 
   return (
@@ -61,4 +99,5 @@ export default function LayoutContent({ layoutProps }: LayoutContentProps) {
       })}
     </div>
   );
-}
+});
+export default LayoutContent;
