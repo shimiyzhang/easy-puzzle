@@ -30,7 +30,7 @@ export default function LayoutMenu({ activeKey, changeKey }: LayoutMenuProps) {
           <div className='flex flex-wrap pt-4 pb-2 pl-5'>
             {filterList.map(({ label, value }) => (
               <button
-                className={`mr-2 rounded-lg border border-gray-100 py-1 px-3 text-xs ${
+                className={`mr-2 mb-2 rounded-lg border border-gray-100 py-1 px-3 text-xs ${
                   active === value ? ' bg-gray-400 text-white' : ''
                 }`}
                 key={value}
