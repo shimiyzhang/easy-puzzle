@@ -2,8 +2,8 @@
 import { useRef, useState } from 'react';
 import ScrollBar, { ScrollBarRef } from './ScrollBar';
 import { layoutList } from '@/data/layoutData';
-import { Button, Dropdown, MenuProps, Select, Space } from 'antd';
-import { DownOutlined, SmileOutlined } from '@ant-design/icons';
+import { Dropdown, MenuProps } from 'antd';
+import React from 'react';
 
 export type LayoutMenuProps = {
   activeKey: string;
@@ -11,7 +11,7 @@ export type LayoutMenuProps = {
 };
 
 // 左侧菜单
-export default function LayoutMenu({ activeKey, changeKey }: LayoutMenuProps) {
+function LayoutMenu({ activeKey, changeKey }: LayoutMenuProps) {
   const [open, setOpen] = useState(true);
   const [active, setActive] = useState(2);
   const scrollRef = useRef<ScrollBarRef | null>(null);
@@ -32,6 +32,21 @@ export default function LayoutMenu({ activeKey, changeKey }: LayoutMenuProps) {
     key: value,
     label: value,
   }));
+
+  const getRandomItem = (list: any[]) => {
+    const randomIndex = Math.floor(Math.random() * list.length);
+    return list[randomIndex];
+  };
+
+  const changeRandomKey = () => {
+    const randomItem = getRandomItem(layoutList);
+    const randomValue = randomItem.value;
+    const randomChildItem = getRandomItem(randomItem.children);
+    const randomKey = randomChildItem.key;
+
+    onChangeActive(randomValue);
+    changeKey(randomKey);
+  };
 
   return (
     <div className='flex h-full items-center'>
@@ -102,6 +117,15 @@ export default function LayoutMenu({ activeKey, changeKey }: LayoutMenuProps) {
               </div>
             ))}
           </ScrollBar>
+          <div className='h-12 w-full cursor-pointer border py-3 pl-5 pr-4'>
+            <button
+              className='flex h-7 w-full items-center justify-center rounded-xl bg-gray-100 text-center text-xs hover:bg-gray-200'
+              onClick={() => changeRandomKey()}
+            >
+              <img src='/update-icon.svg' alt='update-icon' />
+              随机切换布局
+            </button>
+          </div>
         </div>
       </div>
       <button
@@ -113,3 +137,5 @@ export default function LayoutMenu({ activeKey, changeKey }: LayoutMenuProps) {
     </div>
   );
 }
+
+export default React.memo(LayoutMenu);
